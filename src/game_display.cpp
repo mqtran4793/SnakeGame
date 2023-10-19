@@ -4,6 +4,7 @@ Logger logger;
 
 GameDisplay::GameDisplay()
 {
+    XInitThreads();
     m_display = XOpenDisplay(NULL);
 
     if(m_display == NULL)
@@ -22,7 +23,7 @@ GameDisplay::GameDisplay()
                                    DEFAULT_WINDOW_HEIGHT,
                                    1,
                                    BlackPixel(m_display, screen),
-                                   0x010116);
+                                   DEFAULT_BACKGROUND_COLOR);
 
     XSelectInput(m_display, m_window, KeyPressMask | ExposureMask);
     XMapWindow(m_display, m_window);
@@ -53,19 +54,19 @@ Geometry GameDisplay::getWindowGeometry() const
     return current_window;
 }
 
-void GameDisplay::drawRectangle(unsigned long t_fill_color, unsigned long t_border_color, int t_x, int t_y, int t_width, int t_height) const
+void GameDisplay::drawRectangle(Window t_window, unsigned long t_fill_color, unsigned long t_border_color, int t_x, int t_y, int t_width, int t_height) const
 {
     // Set fill color.
     XSetForeground(m_display, m_graphic_context, t_fill_color);
-    XFillRectangle(m_display, m_window, m_graphic_context, t_x, t_y, t_width, t_height);
+    XFillRectangle(m_display, t_window, m_graphic_context, t_x, t_y, t_width, t_height);
     // Set border color.
     XSetForeground(m_display, m_graphic_context, t_border_color);
-    XDrawRectangle(m_display, m_window, m_graphic_context, t_x, t_y, t_width, t_height);
+    XDrawRectangle(m_display, t_window, m_graphic_context, t_x, t_y, t_width, t_height);
 }
 
-void GameDisplay::drawText(int t_x, int t_y, unsigned long t_text_color, const std::string &t_string) const
+void GameDisplay::drawText(Window t_window, int t_x, int t_y, unsigned long t_text_color, const std::string &t_string) const
 {
     // Set text color.
     XSetForeground(m_display, m_graphic_context, t_text_color);
-    XDrawString(m_display, m_window, m_graphic_context, t_x, t_y, t_string.c_str(), t_string.size());
+    XDrawString(m_display, t_window, m_graphic_context, t_x, t_y, t_string.c_str(), t_string.size());
 }
